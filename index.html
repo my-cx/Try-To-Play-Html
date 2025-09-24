@@ -147,7 +147,7 @@
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-light to-blue-50 dark:from-dark dark:to-slate-900 transition-all duration-300">
-    <!-- 导航栏 -->
+    <!-- 导航栏：新增百度翻译图标按钮（位于主题切换和帮助按钮之间） -->
     <nav class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-lg sticky top-0 z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -162,6 +162,16 @@
                         <i class="fa fa-moon-o dark:hidden text-slate-600"></i>
                         <i class="fa fa-sun-o hidden dark:block text-yellow-400"></i>
                     </button>
+                    <!-- 新增：百度翻译图标按钮 -->
+                    <a 
+                        href="https://fanyi.baidu.com/mtpe-individual/multimodal" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
+                        title="打开百度翻译"
+                    >
+                        <i class="fa fa-language text-slate-600 dark:text-slate-300"></i>
+                    </a>
                     <button id="helpBtn" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200">
                         <i class="fa fa-question-circle text-slate-600 dark:text-slate-300"></i>
                     </button>
@@ -170,7 +180,7 @@
         </div>
     </nav>
 
-    <!-- 主要内容 -->
+    <!-- 主要内容：无任何修改 -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- 欢迎区域 -->
         <div id="welcomeSection" class="text-center mb-12 animate-fade-in">
