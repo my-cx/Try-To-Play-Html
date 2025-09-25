@@ -794,7 +794,7 @@ Despite these challenges, the Internet continues to evolve and improve our lives
                 }
                 
                 const unknownWordsArray = Array.from(this.unknownWords);
-                const prompt = `请用以下英语单词各造一个简单的句子。这些句子应该适合英语基础一般的学习者，避免使用其他复杂词汇。每个句子单独一行，不需要编号。
+                const prompt = `请用以下英语单词各造一个简单的句子。这些句子应该适合英语基础一般的学习者，避免使用其他复杂词汇。每个句子单独一行，不需要编号。如果下面的单词不是词语的原型，请默认下面的要求是对于这些词语的原型的
 
 生词列表：${unknownWordsArray.join(', ')}
 
@@ -803,7 +803,8 @@ Despite these challenges, the Internet continues to evolve and improve our lives
 2. 句子结构简单，语法正确
 3. 句子意思清晰，便于理解
 4. 避免使用其他高级词汇
-5. 每个句子单独成句，不需要上下文关联`;
+5. 每个句子单独成句，不需要上下文关联`
+6. 用前四个要求生成一段话;
                 
                 this.aiPromptText.value = prompt;
                 this.aiPromptModal.classList.remove('hidden');
