@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英语阅读理解学习工具（无翻译版）</title>
+    <title>英语阅读理解学习工具</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/v4-shims.min.css">
     <script>
         tailwind.config = {
             theme: {
@@ -108,6 +109,16 @@
             transform: scale(1.05);
         }
         
+        .translation-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .translation-content.show {
+            max-height: 500px;
+        }
+        
         .upload-area {
             transition: all 0.3s ease;
         }
@@ -147,7 +158,7 @@
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-light to-blue-50 dark:from-dark dark:to-slate-900 transition-all duration-300">
-    <!-- 导航栏：新增百度翻译图标按钮（位于主题切换和帮助按钮之间） -->
+    <!-- 导航栏 -->
     <nav class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-lg sticky top-0 z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -162,16 +173,6 @@
                         <i class="fa fa-moon-o dark:hidden text-slate-600"></i>
                         <i class="fa fa-sun-o hidden dark:block text-yellow-400"></i>
                     </button>
-                    <!-- 新增：百度翻译图标按钮 -->
-                    <a 
-                        href="https://fanyi.baidu.com/mtpe-individual/multimodal" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
-                        title="打开百度翻译"
-                    >
-                        <i class="fa fa-language text-slate-600 dark:text-slate-300"></i>
-                    </a>
                     <button id="helpBtn" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200">
                         <i class="fa fa-question-circle text-slate-600 dark:text-slate-300"></i>
                     </button>
@@ -180,7 +181,7 @@
         </div>
     </nav>
 
-    <!-- 主要内容：无任何修改 -->
+    <!-- 主要内容 -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- 欢迎区域 -->
         <div id="welcomeSection" class="text-center mb-12 animate-fade-in">
@@ -190,7 +191,7 @@
                 </div>
                 <h2 class="text-4xl font-bold text-slate-800 dark:text-white mb-4 font-inter">提升你的英语阅读能力</h2>
                 <p class="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-                    上传英语文章，标记生词，生成练习句子。让英语学习变得更高效！
+                    上传英语文章，标记生词，查看翻译，生成练习句子。让英语学习变得更高效！
                 </p>
             </div>
 
@@ -249,8 +250,14 @@
                 </div>
             </div>
 
-            <!-- 控制按钮（移除翻译相关按钮） -->
+            <!-- 控制按钮 -->
             <div class="flex flex-wrap gap-4 mb-8">
+                <button id="showAllTranslationsBtn" class="bg-secondary hover:bg-secondary/90 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover-scale shadow-lg">
+                    <i class="fa fa-language mr-2"></i>显示全部翻译
+                </button>
+                <button id="hideAllTranslationsBtn" class="bg-slate-500 hover:bg-slate-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover-scale shadow-lg">
+                    <i class="fa fa-eye-slash mr-2"></i>隐藏全部翻译
+                </button>
                 <button id="generateAIPromptBtn" class="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover-scale shadow-lg">
                     <i class="fa fa-magic mr-2"></i>生成AI练习句子
                 </button>
@@ -259,7 +266,7 @@
                 </button>
             </div>
 
-            <!-- 文章内容（移除翻译区域） -->
+            <!-- 文章内容 -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 mb-8">
                 <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-6 flex items-center">
                     <i class="fa fa-file-text-o mr-3 text-primary"></i>文章内容
@@ -340,25 +347,31 @@
                         <h4 class="text-lg font-semibold text-slate-800 dark:text-white mb-3 flex items-center">
                             <i class="fa fa-upload mr-2 text-primary"></i>上传文章
                         </h4>
-                        <p class="text-slate-600 dark:text-slate-300">点击上传区域或拖放.txt文件来加载英语文章。系统会自动处理文章内容并按句子分割。</p>
+                        <p class="text-slate-600 dark:text-slate-300">点击上传区域或拖放.txt文件来加载英语文章。系统会自动处理文章内容。</p>
                     </div>
                     <div>
                         <h4 class="text-lg font-semibold text-slate-800 dark:text-white mb-3 flex items-center">
                             <i class="fa fa-mouse-pointer mr-2 text-primary"></i>标记生词
                         </h4>
-                        <p class="text-slate-600 dark:text-slate-300">点击文章中的任意单词即可标记为生词。生词会以黄色背景高亮显示，再次点击可取消标记。</p>
+                        <p class="text-slate-600 dark:text-slate-300">点击文章中的任意单词即可标记为生词。生词会以黄色背景高亮显示。</p>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-slate-800 dark:text-white mb-3 flex items-center">
+                            <i class="fa fa-language mr-2 text-primary"></i>查看翻译
+                        </h4>
+                        <p class="text-slate-600 dark:text-slate-300">点击每个句子下方的"显示翻译"按钮查看中文翻译，或使用"显示全部翻译"按钮查看所有句子的翻译。</p>
                     </div>
                     <div>
                         <h4 class="text-lg font-semibold text-slate-800 dark:text-white mb-3 flex items-center">
                             <i class="fa fa-magic mr-2 text-primary"></i>生成练习
                         </h4>
-                        <p class="text-slate-600 dark:text-slate-300">点击"生成AI练习句子"按钮，系统会创建一个提示词，可用于AI工具生成包含所有生词的简单练习句子。</p>
+                        <p class="text-slate-600 dark:text-slate-300">点击"生成AI练习句子"按钮，系统会创建一个提示词，可用于AI工具生成包含所有生词的练习句子。</p>
                     </div>
                     <div>
                         <h4 class="text-lg font-semibold text-slate-800 dark:text-white mb-3 flex items-center">
                             <i class="fa fa-download mr-2 text-primary"></i>导出单词
                         </h4>
-                        <p class="text-slate-600 dark:text-slate-300">点击"导出生词列表"按钮可将所有标记的生词保存为.txt文件，便于后续复习或导入其他学习工具。</p>
+                        <p class="text-slate-600 dark:text-slate-300">点击"导出生词列表"按钮可将所有标记的生词保存为.txt文件，便于复习。</p>
                     </div>
                 </div>
             </div>
@@ -384,6 +397,7 @@
                 this.currentArticle = '';
                 this.sentences = [];
                 this.unknownWords = new Set();
+                this.translationCache = new Map();
                 
                 this.initializeElements();
                 this.initializeEventListeners();
@@ -400,11 +414,13 @@
                 this.unknownWordsList = document.getElementById('unknownWordsList');
                 this.noUnknownWords = document.getElementById('noUnknownWords');
 
-                // 按钮（移除翻译相关按钮）
+                // 按钮
                 this.browseBtn = document.getElementById('browseBtn');
                 this.loadSampleBtn = document.getElementById('loadSampleBtn');
                 this.uploadAnotherBtn = document.getElementById('uploadAnotherBtn');
                 this.clearAllBtn = document.getElementById('clearAllBtn');
+                this.showAllTranslationsBtn = document.getElementById('showAllTranslationsBtn');
+                this.hideAllTranslationsBtn = document.getElementById('hideAllTranslationsBtn');
                 this.generateAIPromptBtn = document.getElementById('generateAIPromptBtn');
                 this.exportWordsBtn = document.getElementById('exportWordsBtn');
                 this.themeToggle = document.getElementById('themeToggle');
@@ -438,10 +454,12 @@
                 this.uploadArea.addEventListener('drop', (e) => this.handleDrop(e));
                 this.uploadArea.addEventListener('dragleave', () => this.handleDragLeave());
 
-                // 按钮事件（移除翻译相关事件）
+                // 按钮事件
                 this.loadSampleBtn.addEventListener('click', () => this.loadSampleArticle());
                 this.uploadAnotherBtn.addEventListener('click', () => this.fileInput.click());
                 this.clearAllBtn.addEventListener('click', () => this.clearAll());
+                this.showAllTranslationsBtn.addEventListener('click', () => this.showAllTranslations());
+                this.hideAllTranslationsBtn.addEventListener('click', () => this.hideAllTranslations());
                 this.generateAIPromptBtn.addEventListener('click', () => this.generateAIPrompt());
                 this.exportWordsBtn.addEventListener('click', () => this.exportUnknownWords());
                 this.themeToggle.addEventListener('click', () => this.toggleTheme());
@@ -534,8 +552,9 @@ Despite these challenges, the Internet continues to evolve and improve our lives
                 // 清空之前的内容
                 this.sentences = [];
                 this.unknownWords.clear();
+                this.translationCache.clear();
 
-                // 分割句子（基本的句子分割逻辑，保留标点）
+                // 分割句子（基本的句子分割逻辑）
                 const sentenceEndings = /([.!?])\s+/g;
                 const sentences = this.currentArticle.replace(sentenceEndings, '$1|').split('|');
                 
@@ -562,46 +581,164 @@ Despite these challenges, the Internet continues to evolve and improve our lives
                     const sentenceDiv = document.createElement('div');
                     sentenceDiv.className = 'sentence-item p-6 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-primary/50 transition-all duration-300';
                     
-                    // 句子编号（带标识，方便区分句子）
+                    // 句子编号
                     const sentenceNumber = document.createElement('div');
                     sentenceNumber.className = 'text-sm font-bold text-primary mb-3 flex items-center';
                     sentenceNumber.innerHTML = `<i class="fa fa-list-ol mr-2"></i>句子 ${index + 1}`;
                     
-                    // 句子内容（支持单词点击标记）
+                    // 句子内容
                     const sentenceContent = document.createElement('div');
-                    sentenceContent.className = 'text-lg text-slate-800 dark:text-white leading-relaxed';
+                    sentenceContent.className = 'text-lg text-slate-800 dark:text-white leading-relaxed mb-4';
                     sentenceContent.innerHTML = this.highlightWords(sentence);
                     
-                    // 组装句子区域（无翻译部分）
+                    // 翻译按钮和内容
+                    const translationDiv = document.createElement('div');
+                    translationDiv.className = 'mt-4';
+                    
+                    const translateBtn = document.createElement('button');
+                    translateBtn.className = 'bg-secondary/10 hover:bg-secondary/20 text-secondary px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover-scale';
+                    translateBtn.innerHTML = '<i class="fa fa-language mr-2"></i>显示翻译';
+                    translateBtn.addEventListener('click', () => this.toggleTranslation(sentence, index, translationDiv));
+                    
+                    const translationContent = document.createElement('div');
+                    translationContent.className = 'translation-content mt-3 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700';
+                    
+                    translationDiv.appendChild(translateBtn);
+                    translationDiv.appendChild(translationContent);
+                    
                     sentenceDiv.appendChild(sentenceNumber);
                     sentenceDiv.appendChild(sentenceContent);
+                    sentenceDiv.appendChild(translationDiv);
                     
                     this.articleContent.appendChild(sentenceDiv);
                 });
             }
 
             highlightWords(sentence) {
-                // 按空格分割单词，保留标点符号
+                // 简单的单词分割（基于空格）
                 const words = sentence.split(/\s+/);
                 return words.map(word => {
-                    // 提取纯单词（去除标点，用于标记判断）
+                    // 保留标点符号
                     const cleanWord = word.replace(/[^\w]/g, '').toLowerCase();
                     const isUnknown = this.unknownWords.has(cleanWord);
                     
-                    // 生成带标记的单词元素
                     return `<span class="word${isUnknown ? ' word-highlight' : ''}" data-word="${cleanWord}">${word}</span>`;
                 }).join(' ');
             }
 
+            async toggleTranslation(sentence, index, translationDiv) {
+                const translationContent = translationDiv.querySelector('.translation-content');
+                const translateBtn = translationDiv.querySelector('button');
+                
+                if (translationContent.classList.contains('show')) {
+                    translationContent.classList.remove('show');
+                    translateBtn.innerHTML = '<i class="fa fa-language mr-2"></i>显示翻译';
+                    return;
+                }
+                
+                try {
+                    translateBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>翻译中...';
+                    translateBtn.disabled = true;
+                    
+                    let translation = this.translationCache.get(sentence);
+                    if (!translation) {
+                        // 使用百度翻译API
+                        translation = await this.translateText(sentence);
+                        this.translationCache.set(sentence, translation);
+                    }
+                    
+                    translationContent.innerHTML = `
+                        <div class="flex items-start">
+                            <i class="fa fa-comment-o text-secondary mr-3 mt-1"></i>
+                            <div class="text-slate-700 dark:text-slate-300">${translation}</div>
+                        </div>
+                    `;
+                    translationContent.classList.add('show');
+                    translateBtn.innerHTML = '<i class="fa fa-eye-slash mr-2"></i>隐藏翻译';
+                    
+                } catch (error) {
+                    translationContent.innerHTML = `
+                        <div class="flex items-start">
+                            <i class="fa fa-exclamation-triangle text-error mr-3 mt-1"></i>
+                            <div class="text-slate-700 dark:text-slate-300">翻译失败，请稍后重试</div>
+                        </div>
+                    `;
+                    translationContent.classList.add('show');
+                    translateBtn.innerHTML = '<i class="fa fa-language mr-2"></i>重试翻译';
+                } finally {
+                    translateBtn.disabled = false;
+                }
+            }
+
+            async translateText(text) {
+                // 百度翻译API
+                const appId = '20250924002463275';
+                const appKey = 'qeBt2q63Jj6yRAgZ3n4Z';
+                
+                if (!appId || !appKey) {
+                    return "请配置百度翻译API密钥";
+                }
+                
+                const salt = Date.now();
+                const sign = this.md5(appId + text + salt + appKey);
+                
+                const url = `https://fanyi-api.baidu.com/api/trans/vip/translate?q=${encodeURIComponent(text)}&from=en&to=zh&appid=${appId}&salt=${salt}&sign=${sign}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.trans_result && data.trans_result[0]) {
+                    return data.trans_result[0].dst;
+                } else {
+                    throw new Error(data.error_msg || '翻译失败');
+                }
+            }
+
+            md5(string) {
+                // 简单的MD5实现（用于百度翻译API签名）
+                const cryptoObj = window.crypto || window.msCrypto;
+                if (cryptoObj && cryptoObj.subtle) {
+                    const encoder = new TextEncoder();
+                    const data = encoder.encode(string);
+                    return cryptoObj.subtle.digest('MD5', data).then(digest => {
+                        return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+                    });
+                }
+                // 备用的简单哈希实现
+                let hash = 0;
+                for (let i = 0; i < string.length; i++) {
+                    const char = string.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash;
+                }
+                return hash.toString(16);
+            }
+
+            showAllTranslations() {
+                const translateButtons = document.querySelectorAll('.sentence-item button');
+                translateButtons.forEach(btn => {
+                    if (btn.innerHTML.includes('显示翻译')) {
+                        btn.click();
+                    }
+                });
+                this.showNotification('完成', '已显示所有翻译', 'success');
+            }
+
+            hideAllTranslations() {
+                const translateButtons = document.querySelectorAll('.sentence-item button');
+                translateButtons.forEach(btn => {
+                    if (btn.innerHTML.includes('隐藏翻译')) {
+                        btn.click();
+                    }
+                });
+                this.showNotification('完成', '已隐藏所有翻译', 'success');
+            }
+
             updateStatistics() {
-                // 统计总单词数（过滤空字符串）
                 const totalWords = this.currentArticle.split(/\s+/).filter(word => word.length > 0).length;
-                // 统计句子数
                 const totalSentences = this.sentences.length;
-                // 统计生词数
                 const totalUnknownWords = this.unknownWords.size;
                 
-                // 更新页面统计数字
                 this.wordCount.textContent = totalWords;
                 this.sentenceCount.textContent = totalSentences;
                 this.unknownWordCount.textContent = totalUnknownWords;
@@ -613,13 +750,11 @@ Despite these challenges, the Internet continues to evolve and improve our lives
             updateUnknownWordsList() {
                 this.unknownWordsList.innerHTML = '';
                 
-                // 无生词时显示提示
                 if (this.unknownWords.size === 0) {
                     this.noUnknownWords.classList.remove('hidden');
                     return;
                 }
                 
-                // 有生词时显示生词标签
                 this.noUnknownWords.classList.add('hidden');
                 
                 Array.from(this.unknownWords).forEach(word => {
@@ -631,43 +766,33 @@ Despite these challenges, the Internet continues to evolve and improve our lives
                             <i class="fa fa-times"></i>
                         </button>
                     `;
-                    // 点击生词标签，跳转到文章中对应的单词位置
                     wordTag.addEventListener('click', () => this.highlightWordInArticle(word));
                     this.unknownWordsList.appendChild(wordTag);
                 });
             }
 
             highlightWordInArticle(word) {
-                // 找到文章中所有该生词的元素
                 const wordElements = document.querySelectorAll(`[data-word="${word.toLowerCase()}"]`);
-                if (wordElements.length > 0) {
-                    // 滚动到第一个匹配的单词位置
-                    wordElements[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    // 给单词添加闪烁动画，提示位置
-                    wordElements.forEach(element => {
-                        element.classList.add('animate-pulse-slow');
-                        setTimeout(() => element.classList.remove('animate-pulse-slow'), 2000);
-                    });
-                }
+                wordElements.forEach(element => {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    element.classList.add('animate-pulse-slow');
+                    setTimeout(() => element.classList.remove('animate-pulse-slow'), 2000);
+                });
             }
 
             removeUnknownWord(word) {
-                // 从生词集合中移除
                 this.unknownWords.delete(word.toLowerCase());
-                // 更新统计和界面
                 this.updateStatistics();
                 this.displayArticle();
                 this.showNotification('移除', `已移除生词: ${word}`, 'info');
             }
 
             generateAIPrompt() {
-                // 无生词时提示
                 if (this.unknownWords.size === 0) {
                     this.showNotification('提示', '请先标记一些生词', 'info');
                     return;
                 }
                 
-                // 生成AI提示词（适合基础一般的学习者）
                 const unknownWordsArray = Array.from(this.unknownWords);
                 const prompt = `请用以下英语单词各造一个简单的句子。这些句子应该适合英语基础一般的学习者，避免使用其他复杂词汇。每个句子单独一行，不需要编号。
 
@@ -675,49 +800,41 @@ Despite these challenges, the Internet continues to evolve and improve our lives
 
 要求：
 1. 每个句子只包含一个生词
-2. 句子结构简单（以主谓宾为主），语法正确
-3. 句子意思清晰，贴近日常生活场景
-4. 避免使用超出初中英语水平的词汇
-5. 每个句子独立成句，不需要上下文关联`;
+2. 句子结构简单，语法正确
+3. 句子意思清晰，便于理解
+4. 避免使用其他高级词汇
+5. 每个句子单独成句，不需要上下文关联`;
                 
-                // 显示提示词到模态框
                 this.aiPromptText.value = prompt;
                 this.aiPromptModal.classList.remove('hidden');
                 this.aiPromptModal.classList.add('flex');
             }
 
             copyAIPrompt() {
-                // 复制提示词到剪贴板
                 this.aiPromptText.select();
                 document.execCommand('copy');
                 this.showNotification('复制成功', 'AI提示已复制到剪贴板', 'success');
             }
 
             hideAIPromptModal() {
-                // 关闭AI提示模态框
                 this.aiPromptModal.classList.add('hidden');
                 this.aiPromptModal.classList.remove('flex');
             }
 
             exportUnknownWords() {
-                // 无生词时提示
                 if (this.unknownWords.size === 0) {
                     this.showNotification('提示', '没有生词可导出', 'info');
                     return;
                 }
                 
-                // 生成生词文本（每行一个单词）
                 const words = Array.from(this.unknownWords).join('\n');
-                // 创建Blob文件
                 const blob = new Blob([words], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
-                // 创建下载链接
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = '生词列表.txt';
                 document.body.appendChild(a);
                 a.click();
-                // 清理资源
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
@@ -725,10 +842,10 @@ Despite these challenges, the Internet continues to evolve and improve our lives
             }
 
             clearAll() {
-                // 清空所有内容，返回欢迎页
                 this.currentArticle = '';
                 this.sentences = [];
                 this.unknownWords.clear();
+                this.translationCache.clear();
                 
                 this.articleSection.classList.add('hidden');
                 this.welcomeSection.classList.remove('hidden');
@@ -738,30 +855,26 @@ Despite these challenges, the Internet continues to evolve and improve our lives
             }
 
             toggleTheme() {
-                // 切换明暗主题
                 document.documentElement.classList.toggle('dark');
                 const isDark = document.documentElement.classList.contains('dark');
                 localStorage.setItem('theme', isDark ? 'dark' : 'light');
             }
 
             showHelp() {
-                // 显示帮助模态框
                 this.helpModal.classList.remove('hidden');
                 this.helpModal.classList.add('flex');
             }
 
             hideHelpModal() {
-                // 关闭帮助模态框
                 this.helpModal.classList.add('hidden');
                 this.helpModal.classList.remove('flex');
             }
 
             showNotification(title, message, type = 'info') {
-                // 设置通知标题和内容
                 this.notificationTitle.textContent = title;
                 this.notificationMessage.textContent = message;
                 
-                // 设置通知图标和颜色（根据类型区分）
+                // 设置图标和颜色
                 if (type === 'success') {
                     this.notificationIcon.className = 'w-8 h-8 bg-success rounded-full flex items-center justify-center';
                     this.notificationIcon.innerHTML = '<i class="fa fa-check text-white"></i>';
@@ -779,37 +892,36 @@ Despite these challenges, the Internet continues to evolve and improve our lives
                 // 显示通知
                 this.notification.style.transform = 'translateX(0)';
                 
-                // 3秒后自动隐藏
+                // 3秒后隐藏
                 setTimeout(() => {
                     this.notification.style.transform = 'translateX(full)';
                 }, 3000);
             }
         }
 
-        // 页面加载完成后初始化工具
+        // 等待页面加载完成
         document.addEventListener('DOMContentLoaded', () => {
-            // 全局变量，方便HTML中调用（如生词删除）
+            // 全局变量，方便在HTML中调用
             window.reader = new EnglishReader();
             
-            // 单词点击标记/取消标记（事件委托）
+            // 为单词点击事件添加事件委托
             document.addEventListener('click', (e) => {
                 if (e.target.classList.contains('word') || e.target.classList.contains('word-highlight')) {
                     const wordElement = e.target;
                     const word = wordElement.getAttribute('data-word').toLowerCase();
                     
                     if (wordElement.classList.contains('word-highlight')) {
-                        // 取消标记：移除高亮，从生词集合中删除
+                        // 取消标记
                         wordElement.classList.remove('word-highlight');
                         reader.unknownWords.delete(word);
                         reader.showNotification('取消标记', `已取消标记: ${word}`, 'info');
                     } else {
-                        // 标记生词：添加高亮，加入生词集合
+                        // 标记为生词
                         wordElement.classList.add('word-highlight');
                         reader.unknownWords.add(word);
                         reader.showNotification('标记成功', `已标记生词: ${word}`, 'success');
                     }
                     
-                    // 更新统计和生词列表
                     reader.updateStatistics();
                 }
             });
